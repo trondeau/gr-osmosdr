@@ -22,9 +22,10 @@
 #ifndef INCLUDED_RTLSDR_SOURCE_C_H
 #define INCLUDED_RTLSDR_SOURCE_C_H
 
-#include <gr_sync_block.h>
+#include <gnuradio/sync_block.h>
+#include <gnuradio/gr_complex.h>
 
-#include <gruel/thread.h>
+#include <gnuradio/thread/thread.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 
@@ -61,7 +62,7 @@ rtl_source_c_sptr make_rtl_source_c (const std::string & args = "");
  *
  */
 class rtl_source_c :
-    public gr_sync_block,
+  public gr::sync_block,
     public osmosdr_src_iface
 {
 private:
@@ -121,7 +122,7 @@ private:
   std::vector<gr_complex> _lut;
 
   rtlsdr_dev_t *_dev;
-  gruel::thread _thread;
+  gr::thread::thread _thread;
   unsigned short **_buf;
   unsigned int _buf_num;
   unsigned int _buf_len;

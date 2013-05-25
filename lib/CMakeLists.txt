@@ -45,7 +45,9 @@ GR_OSMOSDR_APPEND_SRCS(
 GR_OSMOSDR_APPEND_LIBS(
     ${Boost_LIBRARIES}
     ${GRUEL_LIBRARIES}
-    ${GNURADIO_CORE_LIBRARIES}
+    ${GNURADIO_RUNTIME_LIBRARIES}
+    ${GNURADIO_ANALOG_LIBRARIES}
+    ${GNURADIO_BLOCKS_LIBRARIES}
 )
 
 ########################################################################

@@ -22,7 +22,7 @@
 
 #include <osmosdr/osmosdr_api.h>
 #include <osmosdr/osmosdr_ranges.h>
-#include <gnuradio/gr_hier_block2.h>
+#include <gnuradio/hier_block2.h>
 
 class osmosdr_source_c;
 
@@ -54,7 +54,7 @@ OSMOSDR_API osmosdr_source_c_sptr osmosdr_make_source_c ( const std::string & ar
  *
  * This uses the preferred technique: subclassing gr_hier_block2.
  */
-class OSMOSDR_API osmosdr_source_c : virtual public gr_hier_block2
+class OSMOSDR_API osmosdr_source_c : virtual public gr::hier_block2
 {
 public:
   /*!

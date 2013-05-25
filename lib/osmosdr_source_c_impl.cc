@@ -28,10 +28,11 @@
 #endif
 
 #include <osmosdr_source_c_impl.h>
-#include <gr_io_signature.h>
-#include <gr_noise_source_c.h>
-#include <gr_throttle.h>
-#include <gnuradio/gr_constants.h>
+#include <gnuradio/io_signature.h>
+#include <gnuradio/analog/noise_source_c.h>
+#include <gnuradio/blocks/throttle.h>
+#include <gnuradio/constants.h>
+#include <gnuradio/gr_complex.h>
 
 #ifdef ENABLE_OSMOSDR
 #include <osmosdr_src_c.h>
@@ -85,9 +86,9 @@ osmosdr_make_source_c (const std::string &args)
  * The private constructor
  */
 osmosdr_source_c_impl::osmosdr_source_c_impl (const std::string &args)
-  : gr_hier_block2 ("osmosdr_source_c_impl",
-        gr_make_io_signature (0, 0, 0),
-        args_to_io_signature(args))
+  : gr::hier_block2("osmosdr_source_c_impl",
+                    gr::io_signature::make(0, 0, 0),
+                    args_to_io_signature(args))
 {
   size_t channel = 0;
   bool device_specified = false;
@@ -123,7 +124,7 @@ osmosdr_source_c_impl::osmosdr_source_c_impl (const std::string &args)
 
   std::cerr << "gr-osmosdr "
             << GR_OSMOSDR_VERSION " (" GR_OSMOSDR_LIBVER ") "
-            << "gnuradio " << gr_version() << std::endl;
+            << "gnuradio " << gr::version() << std::endl;
   std::cerr << "built-in source types: ";
   BOOST_FOREACH(std::string dev_type, dev_types)
     std::cerr << dev_type << " ";
@@ -186,7 +187,7 @@ osmosdr_source_c_impl::osmosdr_source_c_impl (const std::string &args)
 //      std::cerr << "'" << entry.first << "' = '" << entry.second << "'" << std::endl;
 
     osmosdr_src_iface *iface = NULL;
-    gr_basic_block_sptr block;
+    gr::basic_block_sptr block;
 
 #ifdef ENABLE_OSMOSDR
     if ( dict.count("osmosdr") ) {
@@ -277,10 +278,11 @@ osmosdr_source_c_impl::osmosdr_source_c_impl (const std::string &args)
 
     /* we try to prevent the whole application from crashing by faking
      * the missing hardware (channels) with a gaussian noise source */
-    gr_noise_source_c_sptr noise_source = \
-        gr_make_noise_source_c( GR_GAUSSIAN, 10 );
+    gr::analog::noise_source_c::sptr noise_source =     \
+      gr::analog::noise_source_c::make( gr::analog::GR_GAUSSIAN, 10 );
 
-    gr_throttle::sptr throttle = gr_make_throttle(sizeof(gr_complex), 1e6);
+    gr::blocks::throttle::sptr throttle = \
+      gr::blocks::throttle::make(sizeof(gr_complex), 1e6);
 
     connect(noise_source, 0, throttle, 0);
 
