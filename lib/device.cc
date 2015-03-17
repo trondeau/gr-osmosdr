@@ -86,11 +86,34 @@
 
 using namespace osmosdr;
 
-static const std::string args_delim = " ";
-static const std::string pairs_delim = ",";
-static const std::string pair_delim = "=";
+static const std::string
+get_args_delim()
+{
+  static const std::string args_delim = " ";
+  return args_delim;
+}
 
-static boost::mutex _device_mutex;
+static const std::string
+get_pairs_delim()
+{
+  static const std::string pairs_delim = ",";
+  return pairs_delim;
+}
+
+static const std::string
+get_pair_delim()
+{
+  static const std::string pair_delim = "=";
+  return pair_delim;
+}
+
+static boost::mutex*
+get_device_mutex()
+{
+  static boost::mutex _device_mutex;
+  return &_device_mutex;
+}
+
 
 device_t::device_t(const std::string &args)
 {
@@ -120,16 +143,16 @@ std::string device_t::to_string(void) const
     std::string value = entry.second;
     if (value.find(" ") != std::string::npos)
       value = "'" + value + "'";
-    ss << ((count++) ? pairs_delim : "") + entry.first;
+    ss << ((count++) ? get_pairs_delim() : "") + entry.first;
     if (value.length())
-      ss << pair_delim + value;
+      ss << get_pair_delim() + value;
   }
   return ss.str();
 }
 
 devices_t device::find(const device_t &hint)
 {
-  boost::mutex::scoped_lock lock(_device_mutex);
+  boost::mutex::scoped_lock lock(*get_device_mutex());
 
   bool fake = true;
 
