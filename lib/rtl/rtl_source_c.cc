@@ -106,8 +106,8 @@ rtl_source_c::rtl_source_c (const std::string &args)
   char serial[256];
 
 #if ANDROID
-  int fd;
-  std::string uspfs_path;
+  int fd = 0;
+  std::string uspfs_path = "";
 #endif
 
   std::stringstream sstr;
@@ -180,7 +180,7 @@ rtl_source_c::rtl_source_c (const std::string &args)
 
 #if ANDROID
   if (dict.count("fd"))
-    fd = boost::lexical_cast< unsigned int >( dict["fd"] );
+    fd = boost::lexical_cast< int >( dict["fd"] );
 
   if (dict.count("uspfs_path"))
     uspfs_path = boost::lexical_cast< std::string >( dict["uspfs_path"] );
@@ -213,6 +213,9 @@ rtl_source_c::rtl_source_c (const std::string &args)
   _dev = NULL;
 
 #if ANDROID
+  sstr.clear();
+  sstr <<  "Calling rtlsdr_open with fd: " << fd << "  and path: " << (uspfs_path.c_str()) << std::endl;
+  LOGD("omsosdr::rtl", sstr.str().c_str());
   ret = rtlsdr_open( &_dev, dev_index, fd, uspfs_path.c_str() );
 #else
   ret = rtlsdr_open( &_dev, dev_index );
