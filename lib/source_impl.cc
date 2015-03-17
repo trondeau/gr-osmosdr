@@ -258,10 +258,8 @@ source_impl::source_impl( const std::string &args )
 
 #ifdef ENABLE_RTL
     if ( dict.count("rtl") ) {
-      LOGD("omsosdr::rtl", "CALLING make_rtl_source_c");
-      rtl_source_c_sptr src = make_rtl_source_c( arg , fd, path);
+      rtl_source_c_sptr src = make_rtl_source_c( arg );
       block = src; iface = src.get();
-      LOGD("omsosdr::rtl", "CALLED make_rtl_source_c");
     }
 #endif
 
