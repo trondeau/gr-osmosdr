@@ -91,9 +91,14 @@
 #include "arg_helpers.h"
 #include "source_impl.h"
 
+#include <android/log.h>
+
 /* This avoids throws in ctor of gr::hier_block2, as gnuradio is unable to deal
  with this behavior in a clean way. The GR maintainer Rondeau has been informed. */
 #define WORKAROUND_GR_HIER_BLOCK2_BUG
+
+#define LOGD(name, msg) __android_log_print(ANDROID_LOG_DEBUG, name, msg)
+
 
 /*
  * Create a new instance of source_impl and return
@@ -163,13 +168,23 @@ source_impl::source_impl( const std::string &args )
 #ifdef ENABLE_REDPITAYA
   dev_types.push_back("redpitaya");
 #endif
+
+#if ANDROID
+  std::stringstream sstr;
+  sstr << "gr-osmosdr "
+       << GR_OSMOSDR_VERSION << " (" << GR_OSMOSDR_LIBVER << ") "
+       << "gnuradio " << gr::version() << std::endl;
+  sstr << "built-in source types: ";
+  BOOST_FOREACH(std::string dev_type, dev_types)
+    sstr << dev_type << " ";
+  sstr << std::endl;
+  LOGD("omsosdr::rtl", sstr.str().c_str());
+#else
   std::cerr << "gr-osmosdr "
             << GR_OSMOSDR_VERSION << " (" << GR_OSMOSDR_LIBVER << ") "
             << "gnuradio " << gr::version() << std::endl;
-  std::cerr << "built-in source types: ";
-  BOOST_FOREACH(std::string dev_type, dev_types)
-    std::cerr << dev_type << " ";
-  std::cerr << std::endl << std::flush;
+#endif
+
 
 #ifdef ENABLE_RFSPACE
   dev_types.push_back("sdr-iq"); /* additional aliases for rfspace backend */
@@ -285,8 +300,10 @@ source_impl::source_impl( const std::string &args )
 
 #ifdef ENABLE_RTL
     if ( dict.count("rtl") ) {
-      rtl_source_c_sptr src = make_rtl_source_c( arg );
+      LOGD("omsosdr::rtl", "CALLING make_rtl_source_c");
+      rtl_source_c_sptr src = make_rtl_source_c( arg , fd, path);
       block = src; iface = src.get();
+      LOGD("omsosdr::rtl", "CALLED make_rtl_source_c");
     }
 #endif
 
@@ -870,99 +887,106 @@ osmosdr::freq_range_t source_impl::get_bandwidth_range( size_t chan )
 
 void source_impl::set_time_source(const std::string &source, const size_t mboard)
 {
-  if (mboard != osmosdr::ALL_MBOARDS){
-      _devs.at(mboard)->set_time_source( source );
-      return;
-  }
-
-  for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
-      _devs.at(m)->set_time_source( source, osmosdr::ALL_MBOARDS );
-  }
+  //if (mboard != osmosdr::ALL_MBOARDS){
+  //    _devs.at(mboard)->set_time_source( source );
+  //    return;
+  //}
+  //
+  //for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
+  //    _devs.at(m)->set_time_source( source, osmosdr::ALL_MBOARDS );
+  //}
 }
 
 std::string source_impl::get_time_source(const size_t mboard)
 {
-  return _devs.at(mboard)->get_time_source( mboard );
+  //return _devs.at(mboard)->get_time_source( mboard );
+  return "";
 }
 
 std::vector<std::string> source_impl::get_time_sources(const size_t mboard)
 {
-  return _devs.at(mboard)->get_time_sources( mboard );
+  //return _devs.at(mboard)->get_time_sources( mboard );
+  return std::vector<std::string>();
 }
 
 void source_impl::set_clock_source(const std::string &source, const size_t mboard)
 {
-  if (mboard != osmosdr::ALL_MBOARDS){
-      _devs.at(mboard)->set_clock_source( source );
-      return;
-  }
-
-  for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
-      _devs.at(m)->set_clock_source( source, osmosdr::ALL_MBOARDS );
-  }
+  //if (mboard != osmosdr::ALL_MBOARDS){
+  //    _devs.at(mboard)->set_clock_source( source );
+  //    return;
+  //}
+  //
+  //for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
+  //    _devs.at(m)->set_clock_source( source, osmosdr::ALL_MBOARDS );
+  //}
 }
 
 std::string source_impl::get_clock_source(const size_t mboard)
 {
-  return _devs.at(mboard)->get_clock_source( mboard );
+  //return _devs.at(mboard)->get_clock_source( mboard );
+  return "";
 }
 
 std::vector<std::string> source_impl::get_clock_sources(const size_t mboard)
 {
-  return _devs.at(mboard)->get_clock_sources( mboard );
+  //return _devs.at(mboard)->get_clock_sources( mboard );
+  return std::vector<std::string>();
 }
 
 double source_impl::get_clock_rate(size_t mboard)
 {
-  return _devs.at(mboard)->get_clock_rate( mboard );
+  //return _devs.at(mboard)->get_clock_rate( mboard );
+  return 0;
 }
 
 void source_impl::set_clock_rate(double rate, size_t mboard)
 {
-  if (mboard != osmosdr::ALL_MBOARDS){
-      _devs.at(mboard)->set_clock_rate( rate );
-      return;
-  }
-
-  for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
-      _devs.at(m)->set_clock_rate( rate, osmosdr::ALL_MBOARDS );
-  }
+  //if (mboard != osmosdr::ALL_MBOARDS){
+  //  _devs.at(mboard)->set_clock_rate( rate );
+  //    return;
+  //}
+  //
+  //for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
+  //    _devs.at(m)->set_clock_rate( rate, osmosdr::ALL_MBOARDS );
+  //}
 }
 
 osmosdr::time_spec_t source_impl::get_time_now(size_t mboard)
 {
-  return _devs.at(mboard)->get_time_now( mboard );
+  //return _devs.at(mboard)->get_time_now( mboard );
+  return osmosdr::time_spec_t(0,0);
 }
 
 osmosdr::time_spec_t source_impl::get_time_last_pps(size_t mboard)
 {
-  return _devs.at(mboard)->get_time_last_pps( mboard );
+  //return _devs.at(mboard)->get_time_last_pps( mboard );
+  return osmosdr::time_spec_t(0,0);
 }
 
 void source_impl::set_time_now(const osmosdr::time_spec_t &time_spec, size_t mboard)
 {
-  if (mboard != osmosdr::ALL_MBOARDS){
-      _devs.at(mboard)->set_time_now( time_spec );
-      return;
-  }
-
-  for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
-      _devs.at(m)->set_time_now( time_spec, osmosdr::ALL_MBOARDS );
-  }
+  //if (mboard != osmosdr::ALL_MBOARDS){
+  //    _devs.at(mboard)->set_time_now( time_spec );
+  //    return;
+  //}
+  //
+  //for (size_t m = 0; m < _devs.size(); m++){ /* propagate ALL_MBOARDS */
+  //    _devs.at(m)->set_time_now( time_spec, osmosdr::ALL_MBOARDS );
+  //}
 }
 
 void source_impl::set_time_next_pps(const osmosdr::time_spec_t &time_spec)
 {
-  BOOST_FOREACH( source_iface *dev, _devs )
-  {
-    dev->set_time_next_pps( time_spec );
-  }
+  //BOOST_FOREACH( source_iface *dev, _devs )
+  //{
+  //  dev->set_time_next_pps( time_spec );
+  //}
 }
 
 void source_impl::set_time_unknown_pps(const osmosdr::time_spec_t &time_spec)
 {
-  BOOST_FOREACH( source_iface *dev, _devs )
-  {
-    dev->set_time_unknown_pps( time_spec );
-  }
+  //BOOST_FOREACH( source_iface *dev, _devs )
+  //{
+  //  dev->set_time_unknown_pps( time_spec );
+  //}
 }
