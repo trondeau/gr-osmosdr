@@ -105,6 +105,11 @@ rtl_source_c::rtl_source_c (const std::string &args)
   char product[256];
   char serial[256];
 
+#if ANDROID
+  int fd;
+  std::string uspfs_path;
+#endif
+
   std::stringstream sstr;
 
   dict_t dict = params_to_dict(args);
@@ -173,6 +178,14 @@ rtl_source_c::rtl_source_c (const std::string &args)
   if (dict.count("buflen"))
     _buf_len = boost::lexical_cast< unsigned int >( dict["buflen"] );
 
+#if ANDROID
+  if (dict.count("fd"))
+    fd = boost::lexical_cast< unsigned int >( dict["fd"] );
+
+  if (dict.count("uspfs_path"))
+    uspfs_path = boost::lexical_cast< std::string >( dict["uspfs_path"] );
+#endif
+
   if (0 == _buf_num)
     _buf_num = BUF_NUM;
 
@@ -198,7 +211,13 @@ rtl_source_c::rtl_source_c (const std::string &args)
   }
 
   _dev = NULL;
+
+#if ANDROID
+  ret = rtlsdr_open( &_dev, dev_index, fd, uspfs_path.c_str() );
+#else
   ret = rtlsdr_open( &_dev, dev_index );
+#endif
+
   if (ret < 0)
     throw std::runtime_error("Failed to open rtlsdr device.");
 
