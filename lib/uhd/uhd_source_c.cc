@@ -29,6 +29,11 @@
 #include "uhd_source_c.h"
 #include "osmosdr/source.h"
 
+#ifdef ANDROID
+#include <android/log.h>
+#define LOGD(name, msg) __android_log_print(ANDROID_LOG_DEBUG, name, msg)
+#endif
+
 using namespace boost::assign;
 
 uhd_source_c_sptr make_uhd_source_c(const std::string &args)
@@ -58,6 +63,8 @@ uhd_source_c::uhd_source_c(const std::string &args) :
     _freq_corr(0.0f),
     _lo_offset(0.0f)
 {
+  LOGD("omsosdr::uhd", "constructor");
+
   size_t nchan = 1;
   dict_t dict = params_to_dict(args);
   uhd::stream_args_t stream_args;
@@ -87,6 +94,8 @@ uhd_source_c::uhd_source_c(const std::string &args) :
     arguments += entry.first + "=" + entry.second + ",";
   }
 
+  arguments += "fd=21,uspfs_path_input=\"/dev/bus/usb\",";
+
   stream_args.cpu_format = "fc32";
   stream_args.otw_format = "sc16";
 
@@ -105,13 +114,17 @@ uhd_source_c::uhd_source_c(const std::string &args) :
   if (dict.count("fullscale") )
     stream_args.args["fullscale"] = dict["fullscale"];
 
+  LOGD("omsosdr::uhd_source_c", "Calling gr::uhd::usrp_source::make");
   _src = gr::uhd::usrp_source::make( arguments, stream_args );
+  LOGD("omsosdr::uhd_source_c", "Called gr::uhd::usrp_source::make");
 
   if (dict.count("subdev"))
     _src->set_subdev_spec( dict["subdev"] );
 
   std::cerr << "-- Using subdev spec '" << _src->get_subdev_spec() << "'."
             << std::endl;
+  LOGD("omsosdr::uhd_source_c", boost::str(boost::format("-- Using subdev spec '%1%'") \
+                                           % _src->get_subdev_spec()).c_str());
 
   if (0.0 != _lo_offset)
     std::cerr << "-- Using LO offset of " << _lo_offset << " Hz." << std::endl;

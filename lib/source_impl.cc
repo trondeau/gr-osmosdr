@@ -79,13 +79,16 @@
 #include "arg_helpers.h"
 #include "source_impl.h"
 
-#include <android/log.h>
-
 /* This avoids throws in ctor of gr::hier_block2, as gnuradio is unable to deal
  with this behavior in a clean way. The GR maintainer Rondeau has been informed. */
 #define WORKAROUND_GR_HIER_BLOCK2_BUG
 
+
+// Support for android logging
+#ifdef ANDROID
+#include <android/log.h>
 #define LOGD(name, msg) __android_log_print(ANDROID_LOG_DEBUG, name, msg)
+#endif
 
 
 /*
@@ -155,7 +158,7 @@ source_impl::source_impl( const std::string &args )
   BOOST_FOREACH(std::string dev_type, dev_types)
     sstr << dev_type << " ";
   sstr << std::endl;
-  LOGD("omsosdr::rtl", sstr.str().c_str());
+  LOGD("omsosdr", sstr.str().c_str());
 
 #ifdef ENABLE_RFSPACE
   dev_types.push_back("sdr-iq"); /* additional aliases for rfspace backend */
@@ -226,11 +229,11 @@ source_impl::source_impl( const std::string &args )
 
   BOOST_FOREACH(std::string arg, arg_list) {
 
+    LOGD("omsosdr", boost::str(boost::format("arg: %1%") % arg).c_str());
     dict_t dict = params_to_dict(arg);
 
-//    std::cerr << std::endl;
-//    BOOST_FOREACH( dict_t::value_type &entry, dict )
-//      std::cerr << "'" << entry.first << "' = '" << entry.second << "'" << std::endl;
+    BOOST_FOREACH( dict_t::value_type &entry, dict )
+      LOGD("omsosdr", boost::str(boost::format(" ->   %1% : %2%") % entry.first % entry.second).c_str());
 
     source_iface *iface = NULL;
     gr::basic_block_sptr block;
@@ -258,6 +261,7 @@ source_impl::source_impl( const std::string &args )
 
 #ifdef ENABLE_RTL
     if ( dict.count("rtl") ) {
+      LOGD("omsosdr", "selected device: rtl");
       rtl_source_c_sptr src = make_rtl_source_c( arg );
       block = src; iface = src.get();
     }
@@ -272,6 +276,7 @@ source_impl::source_impl( const std::string &args )
 
 #ifdef ENABLE_UHD
     if ( dict.count("uhd") ) {
+      LOGD("omsosdr", "selected device: uhd");
       uhd_source_c_sptr src = make_uhd_source_c( arg );
       block = src; iface = src.get();
     }
