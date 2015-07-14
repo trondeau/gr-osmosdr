@@ -158,7 +158,9 @@ source_impl::source_impl( const std::string &args )
   BOOST_FOREACH(std::string dev_type, dev_types)
     sstr << dev_type << " ";
   sstr << std::endl;
+#ifdef ANDROID
   LOGD("omsosdr", sstr.str().c_str());
+#endif
 
 #ifdef ENABLE_RFSPACE
   dev_types.push_back("sdr-iq"); /* additional aliases for rfspace backend */
@@ -229,11 +231,15 @@ source_impl::source_impl( const std::string &args )
 
   BOOST_FOREACH(std::string arg, arg_list) {
 
+#ifdef ANDROID
     LOGD("omsosdr", boost::str(boost::format("arg: %1%") % arg).c_str());
+#endif
     dict_t dict = params_to_dict(arg);
 
+#ifdef ANDROID
     BOOST_FOREACH( dict_t::value_type &entry, dict )
       LOGD("omsosdr", boost::str(boost::format(" ->   %1% : %2%") % entry.first % entry.second).c_str());
+#endif
 
     source_iface *iface = NULL;
     gr::basic_block_sptr block;
@@ -261,7 +267,9 @@ source_impl::source_impl( const std::string &args )
 
 #ifdef ENABLE_RTL
     if ( dict.count("rtl") ) {
+#ifdef ANDROID
       LOGD("omsosdr", "selected device: rtl");
+#endif
       rtl_source_c_sptr src = make_rtl_source_c( arg );
       block = src; iface = src.get();
     }
@@ -276,7 +284,9 @@ source_impl::source_impl( const std::string &args )
 
 #ifdef ENABLE_UHD
     if ( dict.count("uhd") ) {
+#ifdef ANDROID
       LOGD("omsosdr", "selected device: uhd");
+#endif
       uhd_source_c_sptr src = make_uhd_source_c( arg );
       block = src; iface = src.get();
     }
