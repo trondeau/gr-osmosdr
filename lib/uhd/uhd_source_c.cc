@@ -63,7 +63,9 @@ uhd_source_c::uhd_source_c(const std::string &args) :
     _freq_corr(0.0f),
     _lo_offset(0.0f)
 {
+#ifdef ANDROID
   LOGD("omsosdr::uhd", "constructor");
+#endif
 
   size_t nchan = 1;
   dict_t dict = params_to_dict(args);
@@ -114,17 +116,23 @@ uhd_source_c::uhd_source_c(const std::string &args) :
   if (dict.count("fullscale") )
     stream_args.args["fullscale"] = dict["fullscale"];
 
+#ifdef ANDROID
   LOGD("omsosdr::uhd_source_c", "Calling gr::uhd::usrp_source::make");
+#endif
   _src = gr::uhd::usrp_source::make( arguments, stream_args );
+#ifdef ANDROID
   LOGD("omsosdr::uhd_source_c", "Called gr::uhd::usrp_source::make");
+#endif
 
   if (dict.count("subdev"))
     _src->set_subdev_spec( dict["subdev"] );
 
   std::cerr << "-- Using subdev spec '" << _src->get_subdev_spec() << "'."
             << std::endl;
+#ifdef ANDROID
   LOGD("omsosdr::uhd_source_c", boost::str(boost::format("-- Using subdev spec '%1%'") \
                                            % _src->get_subdev_spec()).c_str());
+#endif
 
   if (0.0 != _lo_offset)
     std::cerr << "-- Using LO offset of " << _lo_offset << " Hz." << std::endl;

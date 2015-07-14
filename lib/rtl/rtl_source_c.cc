@@ -45,8 +45,10 @@
 
 
 
+#if ANDROID
 #include <android/log.h>
 #define LOGD(name, msg) __android_log_print(ANDROID_LOG_DEBUG, name, msg)
+#endif
 
 
 
@@ -154,9 +156,11 @@ rtl_source_c::rtl_source_c (const std::string &args)
   //  sstr << " " << rtlsdr_get_device_name(dev_index);
   //}
 
+#if ANDROID
   sstr << std::endl;
   LOGD("omsosdr::rtl", sstr.str().c_str());
   sstr.clear();
+#endif
 
   if (dict.count("rtl_xtal"))
     rtl_freq = (unsigned int)boost::lexical_cast< double >( dict["rtl_xtal"] );
