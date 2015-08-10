@@ -102,8 +102,12 @@ MESSAGE(STATUS "Configuring Boost C++ Libraries...")
 # Although not required on my system, some users have linking issues without
 SET(BOOST_REQUIRED_COMPONENTS
     exception
-    thread
+    date_time
+    program_options
+    regex
+    filesystem
     system
+    thread
     atomic
 )
 
@@ -151,6 +155,7 @@ set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 ########################################################################
 # Find build dependencies
 ########################################################################
+set(UHD_USE_STATIC_LIBS True)
 set(GR_REQUIRED_COMPONENTS RUNTIME BLOCKS)
 find_package(Gnuradio 3.7.3 REQUIRED)
 find_package(GnuradioIQBalance)

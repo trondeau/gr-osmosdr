@@ -43,12 +43,6 @@ GR_OSMOSDR_APPEND_SRCS(
     time_spec.cc
 )
 
-GR_OSMOSDR_APPEND_LIBS(
-    ${Boost_LIBRARIES}
-    ${GNURADIO_ALL_LIBRARIES}
-    log
-)
-
 if(ANDROID)
 GR_OSMOSDR_APPEND_LIBS(
     log
@@ -270,6 +264,17 @@ IF(MSVC)
 
     GR_OSMOSDR_APPEND_SRCS(${CMAKE_CURRENT_BINARY_DIR}/gnuradio-osmosdr.rc)
 ENDIF(MSVC)
+
+
+
+
+GR_OSMOSDR_APPEND_LIBS(
+    ${GNURADIO_ALL_LIBRARIES}
+    ${Boost_LIBRARIES}
+)
+
+
+
 
 ########################################################################
 # Setup libgnuradio-osmosdr library

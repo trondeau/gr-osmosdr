@@ -78,6 +78,11 @@ uhd_source_c::uhd_source_c(const std::string &args) :
   if (dict.count("lo_offset"))
     _lo_offset = boost::lexical_cast< double >( dict["lo_offset"] );
 
+  LOGD("omsosdr::uhd_source_c",
+       boost::str(boost::format("args: %1%")    \
+                  % args).c_str());
+
+
   std::string arguments; // rebuild argument string without internal arguments
   BOOST_FOREACH( dict_t::value_type &entry, dict )
   {
@@ -94,7 +99,11 @@ uhd_source_c::uhd_source_c(const std::string &args) :
     arguments += entry.first + "=" + entry.second + ",";
   }
 
-  arguments += "fd=21,uspfs_path_input=\"/dev/bus/usb\",";
+  //arguments += "fd=21,uspfs_path_input=\"/dev/bus/usb\",";
+
+  LOGD("omsosdr::uhd_source_c",
+       boost::str(boost::format("reformatted args: %1%")    \
+                  % arguments).c_str());
 
   stream_args.cpu_format = "fc32";
   stream_args.otw_format = "sc16";
