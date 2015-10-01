@@ -99,7 +99,7 @@ uhd_source_c::uhd_source_c(const std::string &args) :
     arguments += entry.first + "=" + entry.second + ",";
   }
 
-  //arguments += "fd=21,uspfs_path_input=\"/dev/bus/usb\",";
+  //arguments += "fd=21,usbfs_path_input=\"/dev/bus/usb\",";
 
   LOGD("omsosdr::uhd_source_c",
        boost::str(boost::format("reformatted args: %1%")    \
