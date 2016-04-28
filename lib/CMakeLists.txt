@@ -271,3 +271,18 @@ ADD_LIBRARY(gnuradio-osmosdr SHARED ${gr_osmosdr_srcs})
 TARGET_LINK_LIBRARIES(gnuradio-osmosdr ${gr_osmosdr_libs})
 SET_TARGET_PROPERTIES(gnuradio-osmosdr PROPERTIES DEFINE_SYMBOL "gnuradio_osmosdr_EXPORTS")
 GR_LIBRARY_FOO(gnuradio-osmosdr)
+
+
+########################################################################
+# Static library build
+########################################################################
+add_library(gnuradio-osmosdr_static STATIC ${gr_osmosdr_srcs})
+
+if(NOT WIN32)
+  set_target_properties(gnuradio-osmosdr_static
+    PROPERTIES OUTPUT_NAME gnuradio-osmosdr)
+endif(NOT WIN32)
+
+install(TARGETS gnuradio-osmosdr_static
+  ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT "gnuradio_osmosdr_devel"   # .lib file
+  )
